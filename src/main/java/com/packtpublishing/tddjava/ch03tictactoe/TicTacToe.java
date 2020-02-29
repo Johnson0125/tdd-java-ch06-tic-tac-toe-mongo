@@ -1,6 +1,7 @@
 package com.packtpublishing.tddjava.ch03tictactoe;
 
 public class TicTacToe {
+    private TicTacToeCollection ticTacToeCollection;
 
     private Character[][] board = {{'\0', '\0', '\0'}, {'\0', '\0', '\0'}, {'\0', '\0', '\0'}};
     private char lastPlayer = '\0';
@@ -12,7 +13,8 @@ public class TicTacToe {
         checkAxis(x);
         checkAxis(y);
         lastPlayer = nextPlayer();
-        setBox(x, y, lastPlayer);
+//        setBox(x, y, lastPlayer);
+        setBox(new TicTacToeBean(1, x, y, lastPlayer));
         if (isWin(x, y)) {
             return lastPlayer + " is the winner";
         } else if (isDraw()) {
@@ -35,11 +37,15 @@ public class TicTacToe {
         }
     }
 
-    private void setBox(int x, int y, char lastPlayer) {
-        if (board[x - 1][y - 1] != '\0') {
+    private void setBox(TicTacToeBean bean) {
+        if (board[bean.getX() - 1][bean.getY() - 1] != '\0') {
             throw new RuntimeException("Box is occupied");
         } else {
-            board[x - 1][y - 1] = lastPlayer;
+            board[bean.getX() - 1][bean.getY() - 1] = lastPlayer;
+//            getCollection().saveMove(bean);
+            if(!getCollection().saveMove(bean)){
+                throw new RuntimeException("saving to DB failed");
+            }
         }
     }
 
@@ -73,4 +79,11 @@ public class TicTacToe {
         return true;
     }
 
+    public void setTicTacToeCollection(TicTacToeCollection ticTacToeCollection) {
+        this.ticTacToeCollection = ticTacToeCollection;
+    }
+
+    public TicTacToeCollection getCollection() {
+        return ticTacToeCollection;
+    }
 }
